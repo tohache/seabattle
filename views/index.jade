@@ -1,0 +1,14 @@
+extends layout
+block content
+  title Sea battle
+  h1 Sea battle
+  button(onclick='startNewGame()') Start new game
+  div(id='sq_div' style = "display:none")
+    table.squarelines()
+      -for (let y = 0; y < 10; y++) {
+        tr(id="sq_y_" + y)
+          -for (let x = 0; x < 10; x++) {
+            td.squarecell(id="sq_" + (y *10 + x), onclick='makeFire()')
+          -}
+      -}
+  div(id='log_div')
