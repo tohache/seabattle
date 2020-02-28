@@ -9,6 +9,19 @@ function SeaBattle () {
       return db.saveNewGame(objectToSave);
    };
 
+   this.loadGame = function (id) {
+      console.log('loadGame id=' + id);
+      const result = {};
+      return db.loadGameState(id).then((dbGame) => {
+         result.square = battleOld(dbGame.square).getClientSquareView();
+      }).then(() => {
+         return db.loadFireLog(id).then((logs) => {
+            result.logs = logs;
+            return result;
+         });
+      });
+   };
+
    this.fire = function (id, x, y) {
       console.log('fire id=' + id + '(' + x + ', ' + y + ')');
       const result = {};
@@ -27,6 +40,9 @@ function SeaBattle () {
          const doc = { x: x, y: y };
          if (result.message) {
             doc.message = result.message;
+         }
+         if (result.result || result.result === 0) {
+            doc.result = result.result;
          }
          return db.saveFireLog(id, doc);
       }).then(() => {

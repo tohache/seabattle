@@ -1,0 +1,2 @@
+1. Connection to DB is hardcoded in modules\seamongoroutine.js.
+2. GameId is stored in cookies. So reading of last game state and logs performed on page loading.

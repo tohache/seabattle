@@ -25,8 +25,8 @@ const startNewGame = function () {
    req.onload = function () {
       processResponse(req.response, (response) => {
          if (response.id) {
-            document.getElementById('sq_div').style.display = 'block';
             clearSquare();
+            document.getElementById('sq_div').style.display = 'block';
             clearLog();
             appendLog('New game started');
          } else {
@@ -52,13 +52,7 @@ const makeFire = function (e) {
    req.onload = function () {
       processResponse(req.response, (response) => {
          appendLog('Fire (' + x + ', ' + y + ') Result: ' + (response.message ? response.message : response.result));
-         if (response.result === -1) {
-            td.innerHTML = '.';
-         } else if (response.result === 0) {
-            td.innerHTML = '/';
-         } else if (response.result === 1) {
-            td.innerHTML = 'X';
-         }
+         setCellState(td, response.result);
       });
    };
 
@@ -68,9 +62,55 @@ const makeFire = function (e) {
    req.send(JSON.stringify(json));
 };
 
+const refreshLastState = function () {
+   if (!document.cookie.includes('game_id=')) {
+      return;
+   }
+   const req = createRequest('GET', 'get_last_game');
+   req.onload = function () {
+      processResponse(req.response, (response) => {
+         if (response.square) {
+            populateSquare(response.square);
+            document.getElementById('sq_div').style.display = 'block';
+            if (response.logs) {
+               populateLog(response.logs);
+            }
+         } else {
+            throw new Error('Some error appears on starting game');
+         }
+      });
+   };
+   req.send(null);
+};
+
+const populateSquare = function (square) {
+   for (let y = 0; y < 10; y++) {
+      for (let x = 0; x < 10; x++) {
+         setCellState(document.getElementById('sq_' + (y * 10 + x)), square[x][y]);
+      }
+   }
+};
+
+const populateLog = function (logs) {
+   clearLog();
+   for (let i = 0; i < logs.length; i++) {
+      appendLog('Fire (' + logs[i].x + ', ' + logs[i].y + ') Result: ' + (logs[i].message ? logs[i].message : logs[i].result));
+   }
+};
+
 const clearSquare = function () {
    for (let x = 0; x < 100; x++) {
       document.getElementById('sq_' + x).innerHTML = '';
+   }
+};
+
+const setCellState = function (td, result) {
+   if (result === -1) {
+      td.innerHTML = '.';
+   } else if (result === 0) {
+      td.innerHTML = '/';
+   } else if (result === 1) {
+      td.innerHTML = 'X';
    }
 };
 

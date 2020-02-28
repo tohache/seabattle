@@ -111,6 +111,10 @@ function SeaBattle (sq) {
    this.getSquare = function () {
       return square;
    };
+
+   this.getClientSquareView = function () {
+      return square.map(row => row.map(x => (x >= -1 && x <= 1) ? x : EMPTY_VALUE));
+   };
 }
 
 function createSeaBattle (square) {

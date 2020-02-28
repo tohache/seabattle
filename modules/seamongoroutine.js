@@ -48,6 +48,14 @@ function SeaMongoRoutine () {
       });
    };
 
+   this.loadFireLog = function (id) {
+      return connect().then(() => {
+         return client.db(DB_NAME).collection(LOG_COLLECTION).find({ gameId: ObjectId(id) }).toArray().then((logs) => {
+            return logs;
+         });
+      });
+   };
+
    this.saveFireLog = function (id, log) {
       log.gameId = ObjectId(id);
       return connect().then(() => {

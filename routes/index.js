@@ -19,6 +19,21 @@ router.get('/start_new_game', function (req, res, next) {
    });
 });
 
+router.get('/get_last_game', function (req, res, next) {
+   const result = {};
+   if (!req.cookies[GAME_ID_COOKIE_NAME]) {
+      result.err_message = 'Game id is not valid. Start new game first!';
+      res.json(result);
+      return;
+   }
+   const battle = new SeaBattle();
+   battle.loadGame(req.cookies[GAME_ID_COOKIE_NAME]).then((game) => {
+      result.square = game.square;
+      result.logs = game.logs;
+      res.json(result);
+   });
+});
+
 router.put('/make_fire', function (req, res, next) {
    const result = {};
    if ((!req.body.x || !req.body.y) && req.body.x !== 0 && req.body.y !== 0) {
